@@ -1,0 +1,1941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dwelling Doctors - Ticket Board</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --turquoise: #24D3C1;
+      --charcoal: #37332F;
+      --offwhite: #F1EFEB;
+      --white: #FFFFFF;
+      --silver: #C0C0C0;
+
+      --bg: #F1EFEB;
+      --bg-alt: #FFFFFF;
+      --accent: var(--turquoise);
+      --accent-soft: rgba(36, 211, 193, 0.12);
+      --accent-strong: rgba(36, 211, 193, 0.4);
+      --border: rgba(55, 51, 47, 0.15);
+      --border-soft: rgba(55, 51, 47, 0.08);
+      --text-main: var(--charcoal);
+      --text-muted: #6B6A67;
+      --danger: #EF4444;
+      --danger-soft: rgba(239, 68, 68, 0.08);
+      --success: #22C55E;
+      --success-soft: rgba(34, 197, 94, 0.1);
+      --warning: #EAB308;
+      --warning-soft: rgba(234, 179, 8, 0.12);
+      --radius-lg: 16px;
+      --radius-md: 10px;
+      --shadow-soft: 0 20px 45px rgba(0, 0, 0, 0.12);
+      --shadow-subtle: 0 12px 30px rgba(0, 0, 0, 0.08);
+      --transition-fast: 160ms ease-out;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, rgba(36, 211, 193, 0.16), var(--offwhite));
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 32px 12px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 1180px;
+      background: linear-gradient(135deg, var(--bg-alt), #F8F7F4);
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-soft);
+      padding: 22px 22px 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .title-block {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .brand-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .brand-logo {
+      height: 40px;
+      width: auto;
+      display: block;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--charcoal);
+    }
+
+    .subtitle {
+      margin: 2px 0 0;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .tagline {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--turquoise);
+      margin-top: 2px;
+      text-align: center;
+    }
+
+    .pill {
+      font-size: 11px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #F7F5F2;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 370px) minmax(0, 1fr);
+      gap: 18px;
+    }
+
+    @media (max-width: 880px) {
+      .main-grid { grid-template-columns: minmax(0, 1fr); }
+      .app { padding: 18px 14px 20px; border-radius: 18px; }
+      header { flex-direction: column; align-items: flex-start; }
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-soft);
+      padding: 16px 15px 14px;
+      box-shadow: var(--shadow-subtle);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 10px;
+    }
+
+    .card-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--text-muted);
+    }
+
+    .card-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 2px;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    label {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    input[type="text"],
+    textarea,
+    select {
+      background: #FDFCF9;
+      border-radius: 10px;
+      border: 1px solid var(--border-soft);
+      padding: 7px 9px;
+      font-size: 13px;
+      color: var(--text-main);
+      outline: none;
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), transform 130ms ease-out;
+    }
+
+    input[type="text"]::placeholder,
+    textarea::placeholder { color: #A2A19E; }
+
+    input[type="text"]:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent-strong);
+      background: #FFFFFF;
+      transform: translateY(-0.5px);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 64px;
+      max-height: 200px;
+    }
+
+    .inline-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    @media (max-width: 480px) {
+      .inline-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    .button-row {
+      margin-top: 4px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 6px 13px;
+      font-size: 13px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      background: linear-gradient(135deg, var(--turquoise), #12B5A3);
+      color: var(--white);
+      cursor: pointer;
+      font-weight: 500;
+      box-shadow: 0 12px 28px rgba(36, 211, 193, 0.45);
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast), background var(--transition-fast);
+    }
+
+    .btn-secondary {
+      background: #F6F4F0;
+      color: var(--text-muted);
+      border-color: var(--border-soft);
+      box-shadow: none;
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, var(--danger), #B91C1C);
+      border-color: rgba(239, 68, 68, 0.7);
+      box-shadow: 0 12px 24px rgba(239, 68, 68, 0.38);
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.02);
+      box-shadow: 0 16px 36px rgba(36, 211, 193, 0.55);
+    }
+
+    .btn-secondary:hover {
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.06);
+      background: #FFFFFF;
+    }
+
+    .btn-danger:hover {
+      box-shadow: 0 18px 40px rgba(239, 68, 68, 0.6);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16);
+    }
+
+    .btn-icon {
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      background: #F7F5F2;
+      padding: 4px 8px;
+      font-size: 11px;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: background var(--transition-fast), transform var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+    }
+
+    .btn-icon:hover {
+      background: rgba(36, 211, 193, 0.12);
+      color: var(--charcoal);
+      border-color: var(--accent-strong);
+      transform: translateY(-0.5px);
+    }
+
+    .btn-icon-danger {
+      border-color: rgba(239, 68, 68, 0.4);
+      background: #FDF2F2;
+    }
+
+    .btn-icon-danger:hover {
+      background: var(--danger-soft);
+      color: #7F1D1D;
+    }
+
+    .btn-sm { padding: 4px 9px; font-size: 11px; }
+
+    .badge {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border: 1px solid transparent;
+    }
+
+    .badge-status-backlog { background: #F3F4F6; border-color: #E5E7EB; color: var(--text-muted); }
+    .badge-status-progress { background: var(--accent-soft); border-color: var(--accent-strong); color: var(--charcoal); }
+    .badge-status-done { background: var(--success-soft); border-color: rgba(22, 163, 74, 0.6); color: #166534; }
+    .badge-status-blocked { background: var(--danger-soft); border-color: rgba(239, 68, 68, 0.6); color: #B91C1C; }
+
+    .badge-priority-low { background: #F3F4F6; border-color: #E5E7EB; color: var(--text-muted); }
+    .badge-priority-medium { background: #EEF2FF; border-color: #C7D2FE; color: #4338CA; }
+    .badge-priority-high { background: #FFF7ED; border-color: #FDBA74; color: #C2410C; }
+    .badge-priority-critical { background: #FEF2F2; border-color: #FCA5A5; color: #B91C1C; }
+
+    .tag-pill {
+      background: #F6F4F0;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      padding: 2px 7px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .filters select { min-width: 140px; }
+    .filters .spacer { flex: 1; }
+
+    .tickets-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 520px;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+
+    .tickets-wrapper::-webkit-scrollbar { width: 7px; }
+    .tickets-wrapper::-webkit-scrollbar-track { background: #F3F4F6; border-radius: 999px; }
+    .tickets-wrapper::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 999px; }
+
+    .ticket-card {
+      background: #FFFFFF;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-soft);
+      padding: 9px 10px 9px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: border-color var(--transition-fast), background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+    }
+
+    .ticket-card:hover {
+      border-color: var(--accent-strong);
+      background: #FBFEFF;
+      transform: translateY(-1px);
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
+    }
+
+    .ticket-header-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .ticket-title {
+      font-size: 14px;
+      font-weight: 500;
+      max-width: 100%;
+      word-break: break-word;
+      color: var(--charcoal);
+    }
+
+    .ticket-id {
+      font-size: 11px;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .ticket-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .ticket-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin: 0;
+      white-space: pre-line;
+    }
+
+    .ticket-footer-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .ticket-footer-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .ticket-footer-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .status-select {
+      font-size: 11px;
+      padding: 3px 7px;
+      border-radius: 999px;
+    }
+
+    .empty-state {
+      font-size: 12px;
+      color: var(--text-muted);
+      padding: 16px 0;
+      text-align: center;
+      border-radius: 13px;
+      border: 1px dashed var(--border-soft);
+      background: #F9FAFB;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+
+    .status-dot.blocked { background: var(--danger); }
+    .status-dot.done { background: var(--success); }
+    .status-dot.backlog { background: var(--text-muted); }
+
+    .ticket-details {
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px dashed var(--border-soft);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .detail-section { margin-top: 6px; }
+
+    .detail-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #9CA3AF;
+      margin-bottom: 4px;
+    }
+
+    .comments-list,
+    .features-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 4px;
+      max-height: 110px;
+      overflow-y: auto;
+    }
+
+    .comment-item {
+      padding: 4px 6px;
+      border-radius: 7px;
+      background: #F9FAFB;
+      border: 1px solid #E5E7EB;
+      font-size: 11px;
+      white-space: pre-line;
+    }
+
+    .comment-meta {
+      font-size: 10px;
+      color: #9CA3AF;
+      margin-bottom: 2px;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 4px;
+      border-radius: 7px;
+      background: #F9FAFB;
+      border: 1px solid #E5E7EB;
+    }
+
+    .feature-item span { flex: 1; }
+    .feature-done span { text-decoration: line-through; color: #9CA3AF; }
+
+    .comment-input-row,
+    .feature-input-row {
+      display: flex;
+      gap: 4px;
+      margin-top: 4px;
+    }
+
+    .comment-input-row textarea,
+    .feature-input-row input[type="text"] {
+      font-size: 11px;
+    }
+
+    .notes-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    @media (max-width: 640px) {
+      .notes-grid { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    .notes-grid textarea {
+      min-height: 60px;
+      font-size: 11px;
+    }
+
+    .notes-save-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 4px;
+    }
+
+    .sync-modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.28);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+    }
+
+    .sync-modal {
+      background: #FFFFFF;
+      border-radius: 18px;
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+      max-width: 420px;
+      width: 100%;
+      padding: 18px 18px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      text-align: left;
+    }
+
+    .sync-modal-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--charcoal);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sync-modal-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin: 0;
+    }
+
+    .sync-modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .sync-badge {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      border: 1px solid var(--accent-strong);
+      color: var(--charcoal);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="title-block">
+        <div class="brand-column">
+          <img
+            src="DwellingDoctors_LongLogo_Turquoise_Charcoal.png"
+            alt="Dwelling Doctors"
+            class="brand-logo"
+          />
+          <div class="tagline">BREAKING THE MOULD</div>
+        </div>
+        <div>
+          <h1>Ticket Board</h1>
+          <p class="subtitle">Track, refine and complete work across Dwelling Doctors.</p>
+        </div>
+      </div>
+      <div>
+        <span class="pill">
+          <span class="status-dot"></span>
+          Local + Dwelling Sync
+        </span>
+      </div>
+    </header>
+
+    <div class="main-grid">
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Create / Edit Ticket</div>
+            <div class="card-subtitle">Capture the work, then manage details on the right.</div>
+          </div>
+          <span class="pill" id="formModeLabel">New</span>
+        </div>
+
+        <form id="ticketForm">
+          <input type="hidden" id="ticketId" />
+          <div class="form-grid">
+            <div class="field-group">
+              <label for="title">Title *</label>
+              <input type="text" id="title" required />
+            </div>
+            <div class="field-group">
+              <label for="connectedTo">Connected to</label>
+              <input type="text" id="connectedTo" placeholder="Roy, Scott, Simpro, Website..." />
+            </div>
+            <div class="field-group">
+              <label for="description">Description</label>
+              <textarea id="description" placeholder="Context, decisions, what 'done' means..."></textarea>
+            </div>
+            <div class="field-group">
+              <label for="featuresInput">Features / sub-tasks (one per line)</label>
+              <textarea id="featuresInput" placeholder="Define KPIs&#10>Create training plan&#10>Launch comms"></textarea>
+            </div>
+            <div class="field-group">
+              <label for="nextSteps">Next steps</label>
+              <textarea id="nextSteps" placeholder="What happens after this ticket? Follow-on actions, people to inform..."></textarea>
+            </div>
+            <div class="field-group">
+              <label for="completionNotes">Project completion notes</label>
+              <textarea id="completionNotes" placeholder="Notes once the work is completed, outcomes, learnings..."></textarea>
+            </div>
+            <div class="inline-row">
+              <div class="field-group">
+                <label for="status">Status</label>
+                <select id="status">
+                  <option value="backlog">Backlog</option>
+                  <option value="in_progress">In Progress</option>
+                  <option value="blocked">Blocked</option>
+                  <option value="done">Done</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label for="priority">Priority</label>
+                <select id="priority">
+                  <option value="low">Low</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="high">High</option>
+                  <option value="critical">Critical</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label for="tags">Tags (comma separated)</label>
+                <input type="text" id="tags" placeholder="SLT, Ops, People, Simpro..." />
+              </div>
+            </div>
+          </div>
+
+          <div class="button-row">
+            <button type="button" class="btn btn-secondary btn-sm" id="resetBtn">Reset</button>
+            <button type="submit" class="btn btn-sm" id="submitBtn">Add Ticket</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Tickets</div>
+            <div class="card-subtitle" id="ticketsSummary">0 open • 0 total</div>
+          </div>
+        </div>
+
+        <div class="filters">
+          <div class="field-group" style="min-width: 140px;">
+            <label for="filterStatus">Status</label>
+            <select id="filterStatus">
+              <option value="all">All</option>
+              <option value="backlog">Backlog</option>
+              <option value="in_progress">In Progress</option>
+              <option value="blocked">Blocked</option>
+              <option value="done">Done</option>
+            </select>
+          </div>
+          <div class="field-group" style="min-width: 150px;">
+            <label for="filterSort">Sort</label>
+            <select id="filterSort">
+              <option value="created_desc">Newest first</option>
+              <option value="created_asc">Oldest first</option>
+              <option value="priority_desc">Priority (high → low)</option>
+              <option value="status">Status</option>
+            </select>
+          </div>
+          <div class="spacer"></div>
+
+          <button type="button" class="btn-icon" id="syncCloudBtn">Dwelling Sync</button>
+          <button type="button" class="btn-icon" id="exportBtn">Export (download)</button>
+
+          <label class="btn-icon" style="cursor:pointer;">
+            Import
+            <input type="file" id="importInput" accept="application/json" style="display:none;">
+          </label>
+
+          <button type="button" class="btn-icon btn-icon-danger" id="clearAllBtn">
+            <span>Clear all</span> ✕
+          </button>
+        </div>
+
+        <div class="tickets-wrapper" id="ticketList"></div>
+      </section>
+    </div>
+
+    <div class="sync-modal-backdrop" id="syncModalBackdrop">
+      <div class="sync-modal">
+        <div class="sync-modal-title">
+          <span class="status-dot"></span>
+          Dwelling Sync
+        </div>
+        <p class="sync-modal-subtitle">
+          Pull the latest tickets from the shared Dwelling Doctors workspace so everyone starts from the same view.
+        </p>
+        <div class="sync-badge">
+          ⟳ Recommended when you first open the board
+        </div>
+        <div class="sync-modal-actions">
+          <button type="button" class="btn-icon btn-sm" id="skipSyncBtn">Skip for now</button>
+          <button type="button" class="btn btn-sm" id="confirmSyncBtn">Sync from cloud</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const STORAGE_KEY = "my_simple_ticket_board_v1";
+
+      // 🔗 Power Automate HTTP trigger URL (to save snapshots to OneDrive)
+      const FLOW_URL = ""; // put your Flow URL here when ready
+      // 🔗 OneDrive/SharePoint JSON URL (for Dwelling Sync pull, if you want it)
+      const CLOUD_JSON_URL = ""; // optional – can leave blank for now
+
+      /**
+       * @typedef {{
+       *  id:number,
+       *  title:string,
+       *  connectedTo:string,
+       *  description:string,
+       *  status:"backlog"|"in_progress"|"blocked"|"done",
+       *  priority:"low"|"medium"|"high"|"critical",
+       *  tags:string[],
+       *  createdAt:number,
+       *  updatedAt:number,
+       *  completedAt:number|null,
+       *  completionNotes:string,
+       *  nextSteps:string,
+       *  comments:Array<{id:number,text:string,createdAt:number}>,
+       *  features:Array<{id:number,text:string,done:boolean}>,
+       *  workSessions:Array<{start:number,end:number}>,
+       *  activeSessionStart:number|null
+       * }} Ticket
+       */
+
+      /** @type {Ticket[]} */
+      let tickets = [];
+      let editingId = null;
+
+      // maps used for live timer updates
+      const workSummaryEls = new Map(); // ticket.id -> summary <div>
+      const workCurrentEls = new Map(); // ticket.id -> current session <div>
+      const workBadgeEls   = new Map(); // ticket.id -> little ⏱ badge on card
+
+      // Elements
+      const ticketForm = document.getElementById("ticketForm");
+      const ticketIdInput = document.getElementById("ticketId");
+      const titleInput = document.getElementById("title");
+      const connectedToInput = document.getElementById("connectedTo");
+      const descriptionInput = document.getElementById("description");
+      const featuresInput = document.getElementById("featuresInput");
+      const completionNotesInput = document.getElementById("completionNotes");
+      const nextStepsInput = document.getElementById("nextSteps");
+      const statusInput = document.getElementById("status");
+      const priorityInput = document.getElementById("priority");
+      const tagsInput = document.getElementById("tags");
+      const submitBtn = document.getElementById("submitBtn");
+      const resetBtn = document.getElementById("resetBtn");
+      const filterStatus = document.getElementById("filterStatus");
+      const filterSort = document.getElementById("filterSort");
+      const ticketList = document.getElementById("ticketList");
+      const clearAllBtn = document.getElementById("clearAllBtn");
+      const ticketsSummary = document.getElementById("ticketsSummary");
+      const formModeLabel = document.getElementById("formModeLabel");
+      const exportBtn = document.getElementById("exportBtn");
+      const importInput = document.getElementById("importInput");
+      const syncCloudBtn = document.getElementById("syncCloudBtn");
+      const syncModalBackdrop = document.getElementById("syncModalBackdrop");
+      const confirmSyncBtn = document.getElementById("confirmSyncBtn");
+      const skipSyncBtn = document.getElementById("skipSyncBtn");
+
+      function showSyncModal() {
+        syncModalBackdrop.style.display = "flex";
+      }
+
+      function hideSyncModal() {
+        syncModalBackdrop.style.display = "none";
+      }
+
+      function ensureWorkFields(ticket) {
+        if (!Array.isArray(ticket.workSessions)) ticket.workSessions = [];
+        if (typeof ticket.activeSessionStart !== "number") ticket.activeSessionStart = null;
+      }
+
+      function loadTicketsFromLocal() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          tickets = raw ? JSON.parse(raw) : [];
+          normalizeTickets();
+        } catch (e) {
+          console.error("Failed to load tickets", e);
+          tickets = [];
+        }
+      }
+
+      function saveTickets() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(tickets));
+        } catch (e) {
+          console.error("Failed to save tickets", e);
+          alert("Unable to save tickets to localStorage.");
+        }
+        backupToCloud();
+      }
+
+      function normalizeTickets() {
+        tickets = (tickets || []).map(t => ({
+          ...t,
+          tags: Array.isArray(t.tags) ? t.tags : (typeof t.tags === "string" ? [t.tags] : []),
+          comments: Array.isArray(t.comments) ? t.comments : [],
+          features: Array.isArray(t.features) ? t.features : [],
+          completionNotes: typeof t.completionNotes === "string" ? t.completionNotes : "",
+          nextSteps: typeof t.nextSteps === "string" ? t.nextSteps : "",
+          connectedTo: typeof t.connectedTo === "string" ? t.connectedTo : "",
+          completedAt: typeof t.completedAt === "number" ? t.completedAt : null,
+          workSessions: Array.isArray(t.workSessions) ? t.workSessions : [],
+          activeSessionStart: typeof t.activeSessionStart === "number" ? t.activeSessionStart : null
+        }));
+      }
+
+      async function backupToCloud() {
+        if (!FLOW_URL) return;
+        try {
+          await fetch(FLOW_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(tickets)
+          });
+        } catch (e) {
+          console.error("Cloud backup failed", e);
+        }
+      }
+
+      async function loadFromCloudBackup(showAlerts) {
+        if (!CLOUD_JSON_URL) {
+          if (showAlerts) alert("Cloud sync URL is not configured yet.");
+          return false;
+        }
+        try {
+          const res = await fetch(CLOUD_JSON_URL, {
+            cache: "no-store",
+            credentials: "include"
+          });
+          if (!res.ok) {
+            if (showAlerts) alert("Could not load from cloud backup (HTTP " + res.status + ").");
+            return false;
+          }
+          const data = await res.json();
+          if (!Array.isArray(data)) {
+            if (showAlerts) alert("Cloud backup format is invalid (expected a list).");
+            return false;
+          }
+          tickets = data;
+          normalizeTickets();
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(tickets));
+          if (showAlerts) alert("Dwelling Sync complete – tickets refreshed from cloud.");
+          return true;
+        } catch (e) {
+          console.error("Cloud sync failed", e);
+          if (showAlerts) alert("Could not load from cloud backup.");
+          return false;
+        }
+      }
+
+      function seedInitialTickets() {
+        const now = Date.now();
+        const base = [
+          { title: "Sample sizing report", connectedTo: "Roy", description: "Report generated to ensure we are able to target 25% of all jobs created to be vetted by Supervisor." },
+          { title: "Training videos", connectedTo: "Scott", description: "Videos for us to send to technicians etc – needs to be personalised." },
+          { title: "Automation - Email to Job - Simpro", connectedTo: "All", description: "Currently jobs are coming into email in different ways; they then need to be manually added on the system. Looking for ways for this to be streamlined and entered automatically." },
+          { title: "Rate card - Costing", connectedTo: "Simpro", description: "We need the system to track costings correctly so we can see profitability before the month-end P&L." },
+          { title: "DF to M forms", connectedTo: "All technicians", description: "Move away from digital forms to being able to track values entered by technicians and send reports to clients." },
+          { title: "PDF page break", connectedTo: "Iain Mantraippe", description: "Iain needs a solution that gets the reports to look presentable with correct page breaks." },
+          { title: "Prebuilds - Correction", connectedTo: "All", description: "Rename all sub-groups so the naming sequence is correct throughout. Confirm no unwanted entries in each prebuild and that pricing matches client agreements." },
+          { title: "Pending to WhatsApp", connectedTo: "All", description: "Send a call-to-action message every time a new lead is added to Simpro." },
+          { title: "SEO - Move to digital forms", connectedTo: "Website", description: "Build a replacement bucket for Webpulse to store and track information. Two phases – SharePoint/email." },
+          { title: "Security groups", connectedTo: "Simpro", description: "Ensure all staff are in the correct security groups and only see what they need." }
+        ];
+
+        tickets = base.map((item, index) => ({
+          id: now + index,
+          title: item.title,
+          connectedTo: item.connectedTo,
+          description: item.description,
+          status: "backlog",
+          priority: "medium",
+          tags: [],
+          completionNotes: "",
+          nextSteps: "",
+          comments: [],
+          features: [],
+          createdAt: now + index,
+          updatedAt: now + index,
+          completedAt: null,
+          workSessions: [],
+          activeSessionStart: null
+        }));
+      }
+
+      function formatDate(ts) {
+        const d = new Date(ts);
+        return d.toLocaleDateString(undefined, { day: "2-digit", month: "short" });
+      }
+
+      function formatDateTime(ts) {
+        const d = new Date(ts);
+        return d.toLocaleString(undefined, {
+          day: "2-digit",
+          month: "short",
+          hour: "2-digit",
+          minute: "2-digit"
+        });
+      }
+
+      function statusLabel(status) {
+        switch (status) {
+          case "backlog": return "Backlog";
+          case "in_progress": return "In Progress";
+          case "blocked": return "Blocked";
+          case "done": return "Done";
+          default: return status;
+        }
+      }
+
+      function priorityLabel(priority) {
+        switch (priority) {
+          case "low": return "Low";
+          case "medium": return "Medium";
+          case "high": return "High";
+          case "critical": return "Critical";
+          default: return priority;
+        }
+      }
+
+      function priorityRank(priority) {
+        switch (priority) {
+          case "critical": return 3;
+          case "high": return 2;
+          case "medium": return 1;
+          case "low": return 0;
+          default: return 0;
+        }
+      }
+
+      function statusOrder(status) {
+        switch (status) {
+          case "backlog": return 0;
+          case "in_progress": return 1;
+          case "blocked": return 2;
+          case "done": return 3;
+          default: return 4;
+        }
+      }
+
+      function resetForm() {
+        ticketForm.reset();
+        ticketIdInput.value = "";
+        editingId = null;
+        submitBtn.textContent = "Add Ticket";
+        formModeLabel.textContent = "New";
+        formModeLabel.style.background = "#F7F5F2";
+        formModeLabel.style.border = "1px solid var(--border-soft)";
+      }
+
+      function startEditing(ticket) {
+        editingId = ticket.id;
+        ticketIdInput.value = String(ticket.id);
+        titleInput.value = ticket.title;
+        connectedToInput.value = ticket.connectedTo || "";
+        descriptionInput.value = ticket.description || "";
+        featuresInput.value = (ticket.features || []).map(f => f.text).join("\n");
+        completionNotesInput.value = ticket.completionNotes || "";
+        nextStepsInput.value = ticket.nextSteps || "";
+        statusInput.value = ticket.status;
+        priorityInput.value = ticket.priority;
+        tagsInput.value = (ticket.tags || []).join(", ");
+        submitBtn.textContent = "Save Changes";
+        formModeLabel.textContent = "Editing";
+        formModeLabel.style.background = "rgba(36, 211, 193, 0.12)";
+        formModeLabel.style.border = "1px solid rgba(36, 211, 193, 0.6)";
+      }
+
+      function updateSummary() {
+        const total = tickets.length;
+        const open = tickets.filter(t => t.status !== "done").length;
+        ticketsSummary.textContent = `${open} open • ${total} total`;
+      }
+
+      // --- time tracking helpers ---
+
+      function totalWorkedMs(ticket) {
+        ensureWorkFields(ticket);
+        let sum = 0;
+        for (const s of ticket.workSessions) {
+          if (typeof s.start === "number" && typeof s.end === "number" && s.end >= s.start) {
+            sum += (s.end - s.start);
+          }
+        }
+        if (ticket.activeSessionStart) {
+          sum += (Date.now() - ticket.activeSessionStart);
+        }
+        return sum;
+      }
+
+      function formatDuration(ms) {
+        const totalMinutes = Math.floor(ms / 60000);
+        if (totalMinutes <= 0) return "0m";
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+        if (hours > 0 && minutes > 0) return `${hours}h ${minutes}m`;
+        if (hours > 0) return `${hours}h`;
+        return `${minutes}m`;
+      }
+
+      function workSummaryText(ticket) {
+        ensureWorkFields(ticket);
+        const ms = totalWorkedMs(ticket);
+        const sessions = ticket.workSessions.length + (ticket.activeSessionStart ? 1 : 0);
+        if (sessions === 0) return "No time logged yet.";
+        return `Time logged: ${formatDuration(ms)} (${sessions} session${sessions !== 1 ? "s" : ""})`;
+      }
+
+      function startWork(ticket) {
+        ensureWorkFields(ticket);
+        if (ticket.activeSessionStart) return; // already running
+
+        const now = Date.now();
+        ticket.activeSessionStart = now;
+
+        // if it was backlog/blocked, move to in progress
+        if (ticket.status === "backlog" || ticket.status === "blocked") {
+          ticket.status = "in_progress";
+        }
+
+        ticket.updatedAt = now;
+        saveTickets();
+        renderTickets();
+      }
+
+      function pauseWork(ticket) {
+        ensureWorkFields(ticket);
+        if (!ticket.activeSessionStart) return;
+
+        const now = Date.now();
+        ticket.workSessions.push({ start: ticket.activeSessionStart, end: now });
+        ticket.activeSessionStart = null;
+        ticket.updatedAt = now;
+        saveTickets();
+        renderTickets();
+      }
+
+      function completeWork(ticket) {
+        ensureWorkFields(ticket);
+        const now = Date.now();
+
+        // close any running session
+        if (ticket.activeSessionStart) {
+          ticket.workSessions.push({ start: ticket.activeSessionStart, end: now });
+          ticket.activeSessionStart = null;
+        }
+
+        const previousStatus = ticket.status;
+        ticket.status = "done";
+        ticket.updatedAt = now;
+        if (previousStatus !== "done") {
+          ticket.completedAt = now;
+        }
+
+        saveTickets();
+        renderTickets();
+      }
+
+      function reopenTicket(ticket) {
+        ensureWorkFields(ticket);
+        if (ticket.status !== "done") return; // only valid when done
+
+        const now = Date.now();
+        ticket.status = "in_progress";
+        ticket.completedAt = null;
+        ticket.updatedAt = now;
+        saveTickets();
+        renderTickets();
+      }
+
+      // style start / pause / complete / reopen buttons based on state
+      function styleWorkButtons(ticket, startBtn, pauseBtn, completeBtn, reopenBtn) {
+        ensureWorkFields(ticket);
+
+        [startBtn, pauseBtn, completeBtn, reopenBtn].forEach(btn => {
+          if (!btn) return;
+          btn.style.background = "#F6F4F0";
+          btn.style.borderColor = "var(--border-soft)";
+          btn.style.color = "var(--text-muted)";
+          btn.style.opacity = "1";
+          btn.disabled = false;
+          btn.style.display = "inline-flex";
+        });
+
+        if (ticket.status === "done") {
+          startBtn.disabled = true;
+          pauseBtn.disabled = true;
+          startBtn.style.opacity = "0.5";
+          pauseBtn.style.opacity = "0.5";
+
+          completeBtn.style.background = "var(--accent)";
+          completeBtn.style.borderColor = "rgba(36,211,193,0.8)";
+          completeBtn.style.color = "#FFFFFF";
+
+          reopenBtn.style.display = "inline-flex";
+          reopenBtn.style.background = "#FDF2F2";
+          reopenBtn.style.borderColor = "rgba(36,211,193,0.5)";
+          reopenBtn.style.color = "var(--charcoal)";
+          return;
+        }
+
+        // not done
+        reopenBtn.style.display = "none";
+
+        if (ticket.activeSessionStart) {
+          startBtn.disabled = true;
+          startBtn.style.background = "var(--success)";
+          startBtn.style.borderColor = "rgba(34,197,94,0.8)";
+          startBtn.style.color = "#FFFFFF";
+
+          pauseBtn.disabled = false;
+          pauseBtn.style.background = "var(--warning)";
+          pauseBtn.style.borderColor = "rgba(234,179,8,0.9)";
+          pauseBtn.style.color = "#111827";
+
+          completeBtn.disabled = false;
+          completeBtn.style.background = "var(--accent)";
+          completeBtn.style.borderColor = "rgba(36,211,193,0.8)";
+          completeBtn.style.color = "#FFFFFF";
+        } else {
+          startBtn.disabled = false;
+          startBtn.style.background = "#E5F9F5";
+          startBtn.style.borderColor = "rgba(36,211,193,0.6)";
+          startBtn.style.color = "var(--charcoal)";
+
+          pauseBtn.disabled = true;
+          pauseBtn.style.opacity = "0.6";
+
+          completeBtn.disabled = false;
+          completeBtn.style.background = "var(--accent-soft)";
+          completeBtn.style.borderColor = "rgba(36,211,193,0.5)";
+          completeBtn.style.color = "var(--charcoal)";
+        }
+      }
+
+      function updateWorkTimers() {
+        tickets.forEach(t => {
+          ensureWorkFields(t);
+          const summaryEl = workSummaryEls.get(t.id);
+          const currentEl = workCurrentEls.get(t.id);
+          const badgeEl   = workBadgeEls.get(t.id);
+
+          if (summaryEl) {
+            summaryEl.textContent = workSummaryText(t);
+          }
+
+          if (currentEl) {
+            if (t.activeSessionStart) {
+              const ms = Date.now() - t.activeSessionStart;
+              const pretty = formatDuration(ms);
+              currentEl.textContent = `Current session: ${pretty} (running)`;
+            } else {
+              currentEl.textContent = "No session running.";
+            }
+          }
+
+          if (badgeEl) {
+            if (t.activeSessionStart) {
+              const ms = Date.now() - t.activeSessionStart;
+              const pretty = formatDuration(ms);
+              badgeEl.style.display = "inline-flex";
+              badgeEl.textContent = `⏱ ${pretty}`;
+            } else {
+              badgeEl.style.display = "none";
+            }
+          }
+        });
+      }
+
+      function renderTickets() {
+        normalizeTickets();
+
+        workSummaryEls.clear();
+        workCurrentEls.clear();
+        workBadgeEls.clear();
+
+        const statusFilterValue = filterStatus.value;
+        const sortValue = filterSort.value;
+
+        let viewTickets = tickets.slice();
+
+        if (statusFilterValue !== "all") {
+          viewTickets = viewTickets.filter(t => t.status === statusFilterValue);
+        }
+
+        viewTickets.sort((a, b) => {
+          switch (sortValue) {
+            case "created_asc": return a.createdAt - b.createdAt;
+            case "created_desc": return b.createdAt - a.createdAt;
+            case "priority_desc": {
+              const pr = priorityRank(b.priority) - priorityRank(a.priority);
+              if (pr !== 0) return pr;
+              return b.createdAt - a.createdAt;
+            }
+            case "status": {
+              const so = statusOrder(a.status) - statusOrder(b.status);
+              if (so !== 0) return so;
+              return b.createdAt - a.createdAt;
+            }
+            default: return 0;
+          }
+        });
+
+        ticketList.innerHTML = "";
+
+        if (viewTickets.length === 0) {
+          const empty = document.createElement("div");
+          empty.className = "empty-state";
+          empty.textContent = "No tickets yet. Capture the first one on the left.";
+          ticketList.appendChild(empty);
+          updateSummary();
+          return;
+        }
+
+        viewTickets.forEach((ticket, index) => {
+          ensureWorkFields(ticket);
+
+          const card = document.createElement("div");
+          card.className = "ticket-card";
+          card.dataset.id = String(ticket.id);
+
+          const headerRow = document.createElement("div");
+          headerRow.className = "ticket-header-row";
+
+          const titleSpan = document.createElement("div");
+          titleSpan.className = "ticket-title";
+          titleSpan.textContent = ticket.title;
+
+          const idSpan = document.createElement("div");
+          idSpan.className = "ticket-id";
+          idSpan.textContent = `#${index + 1}`;
+
+          headerRow.appendChild(titleSpan);
+          headerRow.appendChild(idSpan);
+
+          const metaRow = document.createElement("div");
+          metaRow.className = "ticket-meta-row";
+
+          const statusBadge = document.createElement("span");
+          statusBadge.className =
+            "badge " +
+            (ticket.status === "backlog"
+              ? "badge-status-backlog"
+              : ticket.status === "in_progress"
+              ? "badge-status-progress"
+              : ticket.status === "blocked"
+              ? "badge-status-blocked"
+              : "badge-status-done");
+          statusBadge.textContent = statusLabel(ticket.status);
+
+          const priorityBadge = document.createElement("span");
+          priorityBadge.className =
+            "badge " +
+            (ticket.priority === "low"
+              ? "badge-priority-low"
+              : ticket.priority === "medium"
+              ? "badge-priority-medium"
+              : ticket.priority === "high"
+              ? "badge-priority-high"
+              : "badge-priority-critical");
+          priorityBadge.textContent = priorityLabel(ticket.priority);
+
+          metaRow.appendChild(statusBadge);
+          metaRow.appendChild(priorityBadge);
+
+          const workBadge = document.createElement("span");
+          workBadge.className = "tag-pill";
+          if (ticket.activeSessionStart) {
+            const ms = Date.now() - ticket.activeSessionStart;
+            const pretty = formatDuration(ms);
+            workBadge.style.display = "inline-flex";
+            workBadge.textContent = `⏱ ${pretty}`;
+          } else {
+            workBadge.style.display = "none";
+            workBadge.textContent = "⏱ 0m";
+          }
+          workBadgeEls.set(ticket.id, workBadge);
+          metaRow.appendChild(workBadge);
+
+          if (ticket.connectedTo) {
+            const connectedPill = document.createElement("span");
+            connectedPill.className = "tag-pill";
+            connectedPill.textContent = "Connected: " + ticket.connectedTo;
+            metaRow.appendChild(connectedPill);
+          }
+
+          if (ticket.tags && ticket.tags.length) {
+            ticket.tags.forEach(tag => {
+              const pill = document.createElement("span");
+              pill.className = "tag-pill";
+              pill.textContent = tag;
+              metaRow.appendChild(pill);
+            });
+          }
+
+          if (ticket.description) {
+            const desc = document.createElement("p");
+            desc.className = "ticket-desc";
+            desc.textContent = ticket.description || "";
+            card.appendChild(desc);
+          }
+
+          const footerRow = document.createElement("div");
+          footerRow.className = "ticket-footer-row";
+
+          const footerLeft = document.createElement("div");
+          footerLeft.className = "ticket-footer-left";
+          const createdLine = document.createElement("span");
+          createdLine.textContent = `Created ${formatDate(ticket.createdAt)}`;
+          footerLeft.appendChild(createdLine);
+
+          if (ticket.completedAt) {
+            const completedLine = document.createElement("span");
+            completedLine.textContent = `Completed ${formatDate(ticket.completedAt)}`;
+            footerLeft.appendChild(completedLine);
+          } else if (ticket.updatedAt && ticket.updatedAt !== ticket.createdAt) {
+            const updatedLine = document.createElement("span");
+            updatedLine.textContent = `Updated ${formatDate(ticket.updatedAt)}`;
+            footerLeft.appendChild(updatedLine);
+          }
+
+          const footerRight = document.createElement("div");
+          footerRight.className = "ticket-footer-right";
+
+          const detailsBtn = document.createElement("button");
+          detailsBtn.type = "button";
+          detailsBtn.className = "btn-icon btn-sm";
+          detailsBtn.textContent = "Details";
+
+          const statusSelect = document.createElement("select");
+          statusSelect.className = "status-select";
+          ["backlog", "in_progress", "blocked", "done"].forEach(s => {
+            const opt = document.createElement("option");
+            opt.value = s;
+            opt.textContent = statusLabel(s);
+            if (ticket.status === s) opt.selected = true;
+            statusSelect.appendChild(opt);
+          });
+          statusSelect.addEventListener("change", () => {
+            const previous = ticket.status;
+            ticket.status = statusSelect.value;
+            const now = Date.now();
+            ticket.updatedAt = now;
+            if (ticket.status === "done" && previous !== "done") {
+              ticket.completedAt = now;
+            } else if (ticket.status !== "done" && previous === "done") {
+              ticket.completedAt = null;
+            }
+            saveTickets();
+            renderTickets();
+          });
+
+          const editBtn = document.createElement("button");
+          editBtn.type = "button";
+          editBtn.className = "btn-icon btn-sm";
+          editBtn.textContent = "Edit";
+          editBtn.addEventListener("click", () => startEditing(ticket));
+
+          const deleteBtn = document.createElement("button");
+          deleteBtn.type = "button";
+          deleteBtn.className = "btn-icon btn-icon-danger btn-sm";
+          deleteBtn.textContent = "Delete";
+          deleteBtn.addEventListener("click", () => {
+            if (!confirm("Delete this ticket?")) return;
+            tickets = tickets.filter(t => t.id !== ticket.id);
+            saveTickets();
+            renderTickets();
+            if (editingId === ticket.id) resetForm();
+          });
+
+          footerRight.appendChild(detailsBtn);
+          footerRight.appendChild(statusSelect);
+          footerRight.appendChild(editBtn);
+          footerRight.appendChild(deleteBtn);
+
+          footerRow.appendChild(footerLeft);
+          footerRow.appendChild(footerRight);
+
+          const details = document.createElement("div");
+          details.className = "ticket-details";
+          details.style.display = "none";
+
+          const workSection = document.createElement("div");
+          workSection.className = "detail-section";
+
+          const workTitle = document.createElement("div");
+          workTitle.className = "detail-title";
+          workTitle.textContent = "Work tracking";
+          workSection.appendChild(workTitle);
+
+          const workSummary = document.createElement("div");
+          workSummary.style.fontSize = "11px";
+          workSummary.style.marginBottom = "2px";
+          workSummary.textContent = workSummaryText(ticket);
+          workSection.appendChild(workSummary);
+          workSummaryEls.set(ticket.id, workSummary);
+
+          const workCurrent = document.createElement("div");
+          workCurrent.style.fontSize = "11px";
+          workCurrent.style.marginBottom = "4px";
+          workCurrent.textContent = ticket.activeSessionStart
+            ? "Current session: starting..."
+            : "No session running.";
+          workSection.appendChild(workCurrent);
+          workCurrentEls.set(ticket.id, workCurrent);
+
+          const workButtonsRow = document.createElement("div");
+          workButtonsRow.style.display = "flex";
+          workButtonsRow.style.flexWrap = "wrap";
+          workButtonsRow.style.gap = "4px";
+
+          const startBtn = document.createElement("button");
+          startBtn.type = "button";
+          startBtn.className = "btn-icon btn-sm";
+          startBtn.textContent = "Start";
+          startBtn.addEventListener("click", () => startWork(ticket));
+
+          const pauseBtn = document.createElement("button");
+          pauseBtn.type = "button";
+          pauseBtn.className = "btn-icon btn-sm";
+          pauseBtn.textContent = "Pause";
+          pauseBtn.addEventListener("click", () => pauseWork(ticket));
+
+          const completeBtn = document.createElement("button");
+          completeBtn.type = "button";
+          completeBtn.className = "btn-icon btn-sm";
+          completeBtn.textContent = "Complete work";
+          completeBtn.addEventListener("click", () => completeWork(ticket));
+
+          const reopenBtn = document.createElement("button");
+          reopenBtn.type = "button";
+          reopenBtn.className = "btn-icon btn-sm";
+          reopenBtn.textContent = "Re-open";
+          reopenBtn.addEventListener("click", () => reopenTicket(ticket));
+
+          workButtonsRow.appendChild(startBtn);
+          workButtonsRow.appendChild(pauseBtn);
+          workButtonsRow.appendChild(completeBtn);
+          workButtonsRow.appendChild(reopenBtn);
+
+          workSection.appendChild(workButtonsRow);
+
+          styleWorkButtons(ticket, startBtn, pauseBtn, completeBtn, reopenBtn);
+
+          const commentsSection = document.createElement("div");
+          commentsSection.className = "detail-section";
+
+          const commentsTitle = document.createElement("div");
+          commentsTitle.className = "detail-title";
+          commentsTitle.textContent = "Comments";
+          commentsSection.appendChild(commentsTitle);
+
+          const commentsList = document.createElement("div");
+          commentsList.className = "comments-list";
+
+          (ticket.comments || []).forEach(c => {
+            const item = document.createElement("div");
+            item.className = "comment-item";
+
+            const meta = document.createElement("div");
+            meta.className = "comment-meta";
+            meta.textContent = formatDateTime(c.createdAt);
+
+            const body = document.createElement("div");
+            body.textContent = c.text;
+
+            item.appendChild(meta);
+            item.appendChild(body);
+            commentsList.appendChild(item);
+          });
+
+          if (!ticket.comments || ticket.comments.length === 0) {
+            const emptyC = document.createElement("div");
+            emptyC.style.fontSize = "10px";
+            emptyC.style.color = "#9CA3AF";
+            emptyC.textContent = "No comments yet.";
+            commentsList.appendChild(emptyC);
+          }
+
+          commentsSection.appendChild(commentsList);
+
+          const commentInputRow = document.createElement("div");
+          commentInputRow.className = "comment-input-row";
+
+          const commentInput = document.createElement("textarea");
+          commentInput.rows = 2;
+          commentInput.placeholder = "Add a comment to this ticket...";
+          commentInputRow.appendChild(commentInput);
+
+          const commentBtn = document.createElement("button");
+          commentBtn.type = "button";
+          commentBtn.className = "btn-icon btn-sm";
+          commentBtn.textContent = "Add";
+          commentBtn.addEventListener("click", () => {
+            const text = commentInput.value.trim();
+            if (!text) return;
+            const now = Date.now();
+            const comment = { id: now, text, createdAt: now };
+            ticket.comments = ticket.comments || [];
+            ticket.comments.push(comment);
+            ticket.updatedAt = now;
+            saveTickets();
+            renderTickets();
+          });
+
+          commentInputRow.appendChild(commentBtn);
+          commentsSection.appendChild(commentInputRow);
+
+          const featuresSection = document.createElement("div");
+          featuresSection.className = "detail-section";
+
+          const featuresTitle = document.createElement("div");
+          featuresTitle.className = "detail-title";
+          featuresTitle.textContent = "Features / sub-tasks";
+          featuresSection.appendChild(featuresTitle);
+
+          const featuresList = document.createElement("div");
+          featuresList.className = "features-list";
+
+          if (ticket.features && ticket.features.length) {
+            ticket.features.forEach(f => {
+              const item = document.createElement("div");
+              item.className = "feature-item" + (f.done ? " feature-done" : "");
+
+              const checkbox = document.createElement("input");
+              checkbox.type = "checkbox";
+              checkbox.checked = !!f.done;
+              checkbox.addEventListener("change", () => {
+                f.done = checkbox.checked;
+                ticket.updatedAt = Date.now();
+                saveTickets();
+                renderTickets();
+              });
+
+              const label = document.createElement("span");
+              label.textContent = f.text;
+
+              const delBtn = document.createElement("button");
+              delBtn.type = "button";
+              delBtn.className = "btn-icon btn-icon-danger btn-sm";
+              delBtn.textContent = "✕";
+              delBtn.style.fontSize = "10px";
+              delBtn.addEventListener("click", () => {
+                ticket.features = ticket.features.filter(x => x.id !== f.id);
+                ticket.updatedAt = Date.now();
+                saveTickets();
+                renderTickets();
+              });
+
+              item.appendChild(checkbox);
+              item.appendChild(label);
+              item.appendChild(delBtn);
+              featuresList.appendChild(item);
+            });
+          } else {
+            const emptyF = document.createElement("div");
+            emptyF.style.fontSize = "10px";
+            emptyF.style.color = "#9CA3AF";
+            emptyF.textContent = "No features added yet.";
+            featuresList.appendChild(emptyF);
+          }
+
+          featuresSection.appendChild(featuresList);
+
+          const featureInputRow = document.createElement("div");
+          featureInputRow.className = "feature-input-row";
+
+          const featureInput = document.createElement("input");
+          featureInput.type = "text";
+          featureInput.placeholder = "Add a feature / sub-task...";
+          featureInputRow.appendChild(featureInput);
+
+          const featureBtn = document.createElement("button");
+          featureBtn.type = "button";
+          featureBtn.className = "btn-icon btn-sm";
+          featureBtn.textContent = "Add";
+          featureBtn.addEventListener("click", () => {
+            const text = featureInput.value.trim();
+            if (!text) return;
+            const now = Date.now();
+            const feat = { id: now, text, done: false };
+            ticket.features = ticket.features || [];
+            ticket.features.push(feat);
+            ticket.updatedAt = now;
+            saveTickets();
+            renderTickets();
+          });
+
+          featureInputRow.appendChild(featureBtn);
+          featuresSection.appendChild(featureInputRow);
+
+          const notesSection = document.createElement("div");
+          notesSection.className = "detail-section";
+
+          const notesTitle = document.createElement("div");
+          notesTitle.className = "detail-title";
+          notesTitle.textContent = "Next steps & completion";
+          notesSection.appendChild(notesTitle);
+
+          const notesGrid = document.createElement("div");
+          notesGrid.className = "notes-grid";
+
+          const nextStepsGroup = document.createElement("div");
+          const nextLabel = document.createElement("div");
+          nextLabel.style.fontSize = "11px";
+          nextLabel.style.marginBottom = "2px";
+          nextLabel.textContent = "Next steps";
+          const nextText = document.createElement("textarea");
+          nextText.value = ticket.nextSteps || "";
+          nextStepsGroup.appendChild(nextLabel);
+          nextStepsGroup.appendChild(nextText);
+
+          const completionGroup = document.createElement("div");
+          const completionLabel = document.createElement("div");
+          completionLabel.style.fontSize = "11px";
+          completionLabel.style.marginBottom = "2px";
+          completionLabel.textContent = "Project completion notes";
+          const completionText = document.createElement("textarea");
+          completionText.value = ticket.completionNotes || "";
+          completionGroup.appendChild(completionLabel);
+          completionGroup.appendChild(completionText);
+
+          notesGrid.appendChild(nextStepsGroup);
+          notesGrid.appendChild(completionGroup);
+          notesSection.appendChild(notesGrid);
+
+          const notesSaveRow = document.createElement("div");
+          notesSaveRow.className = "notes-save-row";
+          const notesBtn = document.createElement("button");
+          notesBtn.type = "button";
+          notesBtn.className = "btn-icon btn-sm";
+          notesBtn.textContent = "Save notes";
+          notesBtn.addEventListener("click", () => {
+            ticket.completionNotes = completionText.value.trim();
+            ticket.nextSteps = nextText.value.trim();
+            ticket.updatedAt = Date.now();
+            saveTickets();
+            renderTickets();
+          });
+          notesSaveRow.appendChild(notesBtn);
+          notesSection.appendChild(notesSaveRow);
+
+          details.appendChild(workSection);
+          details.appendChild(commentsSection);
+          details.appendChild(featuresSection);
+          details.appendChild(notesSection);
+
+          let detailsOpen = false;
+          detailsBtn.addEventListener("click", () => {
+            detailsOpen = !detailsOpen;
+            details.style.display = detailsOpen ? "block" : "none";
+            detailsBtn.textContent = detailsOpen ? "Hide details" : "Details";
+          });
+
+          card.appendChild(headerRow);
+          card.appendChild(metaRow);
+          card.appendChild(footerRow);
+          card.appendChild(details);
+
+          ticketList.appendChild(card);
+        });
+
+        updateSummary();
+        updateWorkTimers();
+      }
+
+      ticketForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const title = titleInput.value.trim();
+        if (!title) {
+          alert("Title is required.");
+          return;
+        }
+        const connectedTo = connectedToInput.value.trim();
+        const description = descriptionInput.value.trim();
+        const completionNotes = completionNotesInput.value.trim();
+        const nextSteps = nextStepsInput.value.trim();
+        const status = statusInput.value;
+        const priority = priorityInput.value;
+        const tagsRaw = tagsInput.value.trim();
+        const tags = tagsRaw ? tagsRaw.split(",").map(t => t.trim()).filter(Boolean) : [];
+
+        const now = Date.now();
+        const featuresRaw = featuresInput.value.trim();
+        const parsedFeatures = featuresRaw
+          ? featuresRaw.split(/\n+/).map(t => t.trim()).filter(Boolean).map((text, idx) => ({
+              id: now + idx,
+              text,
+              done: false
+            }))
+          : [];
+
+        if (editingId !== null) {
+          const idx = tickets.findIndex(t => t.id === editingId);
+          if (idx !== -1) {
+            const prevStatus = tickets[idx].status;
+            const wasDone = prevStatus === "done";
+            tickets[idx] = {
+              ...tickets[idx],
+              title,
+              connectedTo,
+              description,
+              status,
+              priority,
+              tags,
+              completionNotes,
+              nextSteps,
+              features: parsedFeatures,
+              updatedAt: now,
+              completedAt:
+                status === "done" && !wasDone
+                  ? now
+                  : status !== "done"
+                  ? null
+                  : tickets[idx].completedAt
+            };
+          }
+        } else {
+          const ticket = {
+            id: now,
+            title,
+            connectedTo,
+            description,
+            status,
+            priority,
+            tags,
+            completionNotes,
+            nextSteps,
+            comments: [],
+            features: parsedFeatures,
+            createdAt: now,
+            updatedAt: now,
+            completedAt: status === "done" ? now : null,
+            workSessions: [],
+            activeSessionStart: null
+          };
+          tickets.push(ticket);
+        }
+
+        saveTickets();
+        renderTickets();
+        resetForm();
+      });
+
+      resetBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        resetForm();
+      });
+
+      filterStatus.addEventListener("change", renderTickets);
+      filterSort.addEventListener("change", renderTickets);
+
+      clearAllBtn.addEventListener("click", () => {
+        if (!tickets.length) return;
+        if (!confirm("Clear ALL tickets? This cannot be undone.")) return;
+        tickets = [];
+        localStorage.removeItem(STORAGE_KEY);
+        renderTickets();
+        resetForm();
+        backupToCloud();
+      });
+
+      exportBtn.addEventListener("click", () => {
+        if (!tickets.length) {
+          alert("No tickets to export.");
+          return;
+        }
+        const blob = new Blob([JSON.stringify(tickets, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "tickets-backup-" + new Date().toISOString().slice(0,10) + ".json";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+
+      importInput.addEventListener("change", (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const data = JSON.parse(reader.result);
+            if (!Array.isArray(data)) throw new Error("File format not recognised (expected a list).");
+            tickets = data;
+            normalizeTickets();
+            saveTickets();
+            renderTickets();
+            resetForm();
+            alert("Imported " + tickets.length + " tickets.");
+          } catch (err) {
+            console.error(err);
+            alert("Could not import file: " + err.message);
+          }
+        };
+        reader.readAsText(file);
+        importInput.value = "";
+      });
+
+      syncCloudBtn.addEventListener("click", () => {
+        loadFromCloudBackup(true).then(success => {
+          if (!success && !tickets.length) {
+            seedInitialTickets();
+            saveTickets();
+          }
+          renderTickets();
+          resetForm();
+        });
+      });
+
+      confirmSyncBtn.addEventListener("click", () => {
+        loadFromCloudBackup(true).then(success => {
+          if (!success && !tickets.length) {
+            seedInitialTickets();
+            saveTickets();
+          }
+          renderTickets();
+          resetForm();
+          hideSyncModal();
+        });
+      });
+
+      skipSyncBtn.addEventListener("click", () => {
+        if (!tickets.length) {
+          seedInitialTickets();
+          saveTickets();
+        }
+        renderTickets();
+        resetForm();
+        hideSyncModal();
+      });
+
+      (function init() {
+        loadTicketsFromLocal();
+        renderTickets();
+        showSyncModal();
+        setInterval(updateWorkTimers, 1000);
+      })();
+    })();
+  </script>
+</body>
+</html>
