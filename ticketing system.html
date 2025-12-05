@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Simple Ticket Board</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-alt: #020617;
+      --card: #020617;
+      --accent: #3b82f6;
+      --accent-soft: rgba(59,130,246,0.12);
+      --accent-strong: rgba(59,130,246,0.2);
+      --border: #1e293b;
+      --border-soft: rgba(148,163,184,0.3);
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --danger: #ef4444;
+      --danger-soft: rgba(239,68,68,0.14);
+      --success: #22c55e;
+      --success-soft: rgba(34,197,94,0.14);
+      --warning: #eab308;
+      --warning-soft: rgba(234,179,8,0.14);
+      --radius-lg: 16px;
+      --radius-md: 10px;
+      --shadow-soft: 0 18px 45px rgba(0,0,0,0.45);
+      --shadow-subtle: 0 10px 30px rgba(15,23,42,0.7);
+      --transition-fast: 160ms ease-out;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #1d283a, #020617 56%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 32px 12px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 1180px;
+      background: radial-gradient(circle at top left, rgba(148,163,184,0.18), transparent 60%), var(--bg-alt);
+      border-radius: 24px;
+      border: 1px solid rgba(148,163,184,0.22);
+      box-shadow: var(--shadow-soft);
+      padding: 22px 22px 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      backdrop-filter: blur(18px);
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(148,163,184,0.3);
+    }
+
+    .title-block {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-pill {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 20%, #60a5fa, #1d4ed8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 15px;
+      box-shadow: 0 12px 30px rgba(37,99,235,0.7);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 21px;
+      letter-spacing: 0.02em;
+    }
+
+    .subtitle {
+      margin: 0;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .pill {
+      font-size: 11px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.35);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(15,23,42,0.9);
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+      gap: 18px;
+    }
+
+    @media (max-width: 880px) {
+      .main-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .app {
+        padding: 18px 14px 20px;
+        border-radius: 18px;
+      }
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    /* Card */
+    .card {
+      background: radial-gradient(circle at top, rgba(15,23,42,0.9), rgba(2,6,23,0.96));
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(148,163,184,0.28);
+      padding: 16px 15px 14px;
+      box-shadow: var(--shadow-subtle);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 10px;
+    }
+
+    .card-title {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+
+    .card-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Form */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 2px;
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    label {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    input[type="text"],
+    textarea,
+    select {
+      background: rgba(15,23,42,0.85);
+      border-radius: 10px;
+      border: 1px solid rgba(148,163,184,0.35);
+      padding: 7px 9px;
+      font-size: 13px;
+      color: var(--text-main);
+      outline: none;
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), transform 130ms ease-out;
+    }
+
+    input[type="text"]::placeholder,
+    textarea::placeholder {
+      color: rgba(148,163,184,0.7);
+    }
+
+    input[type="text"]:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent-strong);
+      background: rgba(15,23,42,0.98);
+      transform: translateY(-0.5px);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 76px;
+      max-height: 180px;
+    }
+
+    .inline-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    @media (max-width: 480px) {
+      .inline-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    .button-row {
+      margin-top: 4px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 6px 13px;
+      font-size: 13px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.4);
+      background: radial-gradient(circle at top left, #2563eb, #1d4ed8);
+      color: white;
+      cursor: pointer;
+      font-weight: 500;
+      box-shadow: 0 14px 30px rgba(37,99,235,0.55);
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast), background var(--transition-fast);
+    }
+
+    .btn-secondary {
+      background: rgba(15,23,42,0.9);
+      color: var(--text-muted);
+      box-shadow: none;
+    }
+
+    .btn-danger {
+      background: radial-gradient(circle at top, var(--danger), #b91c1c);
+      border-color: rgba(239,68,68,0.7);
+      box-shadow: 0 12px 26px rgba(239,68,68,0.46);
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.02);
+      box-shadow: 0 18px 42px rgba(37,99,235,0.7);
+    }
+
+    .btn-secondary:hover {
+      box-shadow: 0 12px 28px rgba(15,23,42,0.9);
+    }
+
+    .btn-danger:hover {
+      box-shadow: 0 18px 42px rgba(239,68,68,0.75);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+      box-shadow: 0 10px 24px rgba(15,23,42,0.85);
+    }
+
+    .btn-icon {
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.6);
+      background: rgba(15,23,42,0.85);
+      padding: 4px 8px;
+      font-size: 11px;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: background var(--transition-fast), transform var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+    }
+
+    .btn-icon:hover {
+      background: rgba(30,64,175,0.85);
+      color: #e5edff;
+      border-color: var(--accent);
+      transform: translateY(-0.5px);
+    }
+
+    .btn-icon-danger {
+      border-color: rgba(239,68,68,0.7);
+    }
+
+    .btn-icon-danger:hover {
+      background: rgba(127,29,29,0.95);
+      color: #fee2e2;
+    }
+
+    .btn-sm {
+      padding: 4px 9px;
+      font-size: 11px;
+    }
+
+    .badge {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      border: 1px solid transparent;
+    }
+
+    .badge-status-backlog {
+      background: rgba(15,23,42,0.95);
+      border-color: rgba(148,163,184,0.45);
+      color: var(--text-muted);
+    }
+
+    .badge-status-progress {
+      background: var(--accent-soft);
+      border-color: rgba(59,130,246,0.7);
+      color: #bfdbfe;
+    }
+
+    .badge-status-done {
+      background: var(--success-soft);
+      border-color: rgba(34,197,94,0.7);
+      color: #bbf7d0;
+    }
+
+    .badge-status-blocked {
+      background: var(--danger-soft);
+      border-color: rgba(239,68,68,0.8);
+      color: #fecaca;
+    }
+
+    .badge-priority-low {
+      background: rgba(15,23,42,0.95);
+      border-color: rgba(148,163,184,0.4);
+      color: var(--text-muted);
+    }
+
+    .badge-priority-medium {
+      background: rgba(180, 83, 9, 0.14);
+      border-color: rgba(245, 158, 11, 0.7);
+      color: #fed7aa;
+    }
+
+    .badge-priority-high {
+      background: rgba(234, 88, 12, 0.18);
+      border-color: rgba(249, 115, 22, 0.9);
+      color: #fed7aa;
+    }
+
+    .badge-priority-critical {
+      background: rgba(127,29,29,0.96);
+      border-color: rgba(248,113,113,0.95);
+      color: #fee2e2;
+    }
+
+    .tag-pill {
+      background: rgba(15,23,42,0.9);
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,0.45);
+      padding: 2px 7px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .filters select {
+      min-width: 140px;
+    }
+
+    .filters .spacer {
+      flex: 1;
+    }
+
+    /* Ticket list */
+    .tickets-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 520px;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+
+    .tickets-wrapper::-webkit-scrollbar {
+      width: 7px;
+    }
+
+    .tickets-wrapper::-webkit-scrollbar-track {
+      background: rgba(15,23,42,0.7);
+      border-radius: 999px;
+    }
+
+    .tickets-wrapper::-webkit-scrollbar-thumb {
+      background: rgba(148,163,184,0.7);
+      border-radius: 999px;
+    }
+
+    .ticket-card {
+      background: rgba(15,23,42,0.96);
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(148,163,184,0.35);
+      padding: 9px 10px 9px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: border-color var(--transition-fast), background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+    }
+
+    .ticket-card:hover {
+      border-color: rgba(59,130,246,0.9);
+      background: radial-gradient(circle at top left, rgba(37,99,235,0.16), rgba(15,23,42,1));
+      transform: translateY(-1px);
+      box-shadow: 0 14px 34px rgba(15,23,42,0.9);
+    }
+
+    .ticket-header-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .ticket-title {
+      font-size: 14px;
+      font-weight: 500;
+      max-width: 100%;
+      word-break: break-word;
+    }
+
+    .ticket-id {
+      font-size: 11px;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .ticket-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .ticket-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin: 0;
+      white-space: pre-line;
+    }
+
+    .ticket-footer-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .ticket-footer-left {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .ticket-footer-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-select {
+      font-size: 11px;
+      padding: 3px 7px;
+      border-radius: 999px;
+    }
+
+    .empty-state {
+      font-size: 12px;
+      color: var(--text-muted);
+      padding: 16px 0;
+      text-align: center;
+      border-radius: 13px;
+      border: 1px dashed rgba(148,163,184,0.5);
+      background: rgba(15,23,42,0.6);
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+
+    .status-dot.blocked {
+      background: var(--danger);
+    }
+
+    .status-dot.done {
+      background: var(--success);
+    }
+
+    .status-dot.backlog {
+      background: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="title-block">
+        <div class="logo-pill">T</div>
+        <div>
+          <h1>My Ticket Board</h1>
+          <p class="subtitle">Personal task & ticket tracker • local only, no server</p>
+        </div>
+      </div>
+      <div>
+        <span class="pill">
+          <span class="status-dot"></span>
+          Local Storage
+        </span>
+      </div>
+    </header>
+
+    <div class="main-grid">
+      <!-- Left: form -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Create / Edit Ticket</div>
+            <div class="card-subtitle">Minimal fields, quick capture.</div>
+          </div>
+          <span class="pill" id="formModeLabel">New</span>
+        </div>
+
+        <form id="ticketForm">
+          <input type="hidden" id="ticketId" />
+          <div class="form-grid">
+            <div class="field-group">
+              <label for="title">Title *</label>
+              <input type="text" id="title" placeholder="e.g. Prepare SLT pack for Q1" required />
+            </div>
+            <div class="field-group">
+              <label for="description">Description</label>
+              <textarea id="description" placeholder="Short context, decisions, what 'done' means..."></textarea>
+            </div>
+            <div class="inline-row">
+              <div class="field-group">
+                <label for="status">Status</label>
+                <select id="status">
+                  <option value="backlog">Backlog</option>
+                  <option value="in_progress">In Progress</option>
+                  <option value="blocked">Blocked</option>
+                  <option value="done">Done</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label for="priority">Priority</label>
+                <select id="priority">
+                  <option value="low">Low</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="high">High</option>
+                  <option value="critical">Critical</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label for="tags">Tags (comma separated)</label>
+                <input type="text" id="tags" placeholder="e.g. SLT, Ops, People" />
+              </div>
+            </div>
+          </div>
+
+          <div class="button-row">
+            <button type="button" class="btn btn-secondary btn-sm" id="resetBtn">Reset</button>
+            <button type="submit" class="btn btn-sm" id="submitBtn">Add Ticket</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Right: list -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Tickets</div>
+            <div class="card-subtitle" id="ticketsSummary">0 open • 0 total</div>
+          </div>
+        </div>
+
+        <div class="filters">
+          <div class="field-group" style="min-width: 140px;">
+            <label for="filterStatus">Status</label>
+            <select id="filterStatus">
+              <option value="all">All</option>
+              <option value="backlog">Backlog</option>
+              <option value="in_progress">In Progress</option>
+              <option value="blocked">Blocked</option>
+              <option value="done">Done</option>
+            </select>
+          </div>
+          <div class="field-group" style="min-width: 150px;">
+            <label for="filterSort">Sort</label>
+            <select id="filterSort">
+              <option value="created_desc">Newest first</option>
+              <option value="created_asc">Oldest first</option>
+              <option value="priority_desc">Priority (high → low)</option>
+              <option value="status">Status</option>
+            </select>
+          </div>
+          <div class="spacer"></div>
+          <button type="button" class="btn-icon btn-icon-danger" id="clearAllBtn">
+            <span>Clear all</span> ✕
+          </button>
+        </div>
+
+        <div class="tickets-wrapper" id="ticketList">
+          <!-- tickets rendered here -->
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const STORAGE_KEY = "my_simple_ticket_board_v1";
+
+      /** @typedef {{id:number,title:string,description:string,status:string,priority:string,tags:string[],createdAt:number,updatedAt:number}} Ticket */
+
+      /** @type {Ticket[]} */
+      let tickets = [];
+      let editingId = null;
+
+      // Elements
+      const ticketForm = document.getElementById("ticketForm");
+      const ticketIdInput = document.getElementById("ticketId");
+      const titleInput = document.getElementById("title");
+      const descriptionInput = document.getElementById("description");
+      const statusInput = document.getElementById("status");
+      const priorityInput = document.getElementById("priority");
+      const tagsInput = document.getElementById("tags");
+      const submitBtn = document.getElementById("submitBtn");
+      const resetBtn = document.getElementById("resetBtn");
+      const filterStatus = document.getElementById("filterStatus");
+      const filterSort = document.getElementById("filterSort");
+      const ticketList = document.getElementById("ticketList");
+      const clearAllBtn = document.getElementById("clearAllBtn");
+      const ticketsSummary = document.getElementById("ticketsSummary");
+      const formModeLabel = document.getElementById("formModeLabel");
+
+      // Load & save
+      function loadTickets() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          tickets = raw ? JSON.parse(raw) : [];
+        } catch (e) {
+          console.error("Failed to load tickets", e);
+          tickets = [];
+        }
+      }
+
+      function saveTickets() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(tickets));
+        } catch (e) {
+          console.error("Failed to save tickets", e);
+          alert("Unable to save tickets to localStorage.");
+        }
+      }
+
+      // Helpers
+      function formatDate(ts) {
+        const d = new Date(ts);
+        return d.toLocaleDateString(undefined, { day: "2-digit", month: "short" });
+      }
+
+      function statusLabel(status) {
+        switch (status) {
+          case "backlog": return "Backlog";
+          case "in_progress": return "In Progress";
+          case "blocked": return "Blocked";
+          case "done": return "Done";
+          default: return status;
+        }
+      }
+
+      function priorityLabel(priority) {
+        switch (priority) {
+          case "low": return "Low";
+          case "medium": return "Medium";
+          case "high": return "High";
+          case "critical": return "Critical";
+          default: return priority;
+        }
+      }
+
+      function priorityRank(priority) {
+        switch (priority) {
+          case "critical": return 3;
+          case "high": return 2;
+          case "medium": return 1;
+          case "low": return 0;
+          default: return 0;
+        }
+      }
+
+      function statusOrder(status) {
+        switch (status) {
+          case "backlog": return 0;
+          case "in_progress": return 1;
+          case "blocked": return 2;
+          case "done": return 3;
+          default: return 4;
+        }
+      }
+
+      function resetForm() {
+        ticketForm.reset();
+        ticketIdInput.value = "";
+        editingId = null;
+        submitBtn.textContent = "Add Ticket";
+        formModeLabel.textContent = "New";
+        formModeLabel.style.background = "rgba(15,23,42,0.9)";
+        formModeLabel.style.border = "1px solid rgba(148,163,184,0.6)";
+      }
+
+      function startEditing(ticket) {
+        editingId = ticket.id;
+        ticketIdInput.value = String(ticket.id);
+        titleInput.value = ticket.title;
+        descriptionInput.value = ticket.description || "";
+        statusInput.value = ticket.status;
+        priorityInput.value = ticket.priority;
+        tagsInput.value = (ticket.tags || []).join(", ");
+        submitBtn.textContent = "Save Changes";
+        formModeLabel.textContent = "Editing";
+        formModeLabel.style.background = "rgba(37,99,235,0.15)";
+        formModeLabel.style.border = "1px solid rgba(59,130,246,0.9)";
+      }
+
+      function updateSummary() {
+        const total = tickets.length;
+        const open = tickets.filter(t => t.status !== "done").length;
+        ticketsSummary.textContent = `${open} open • ${total} total`;
+      }
+
+      function renderTickets() {
+        const statusFilterValue = filterStatus.value;
+        const sortValue = filterSort.value;
+
+        let viewTickets = tickets.slice();
+
+        if (statusFilterValue !== "all") {
+          viewTickets = viewTickets.filter(t => t.status === statusFilterValue);
+        }
+
+        viewTickets.sort((a, b) => {
+          switch (sortValue) {
+            case "created_asc":
+              return a.createdAt - b.createdAt;
+            case "created_desc":
+              return b.createdAt - a.createdAt;
+            case "priority_desc": {
+              const pr = priorityRank(b.priority) - priorityRank(a.priority);
+              if (pr !== 0) return pr;
+              return b.createdAt - a.createdAt;
+            }
+            case "status": {
+              const so = statusOrder(a.status) - statusOrder(b.status);
+              if (so !== 0) return so;
+              return b.createdAt - a.createdAt;
+            }
+            default:
+              return 0;
+          }
+        });
+
+        ticketList.innerHTML = "";
+
+        if (viewTickets.length === 0) {
+          const empty = document.createElement("div");
+          empty.className = "empty-state";
+          empty.textContent = "No tickets yet. Capture the first one on the left.";
+          ticketList.appendChild(empty);
+          updateSummary();
+          return;
+        }
+
+        viewTickets.forEach((ticket, index) => {
+          const card = document.createElement("div");
+          card.className = "ticket-card";
+          card.dataset.id = String(ticket.id);
+
+          // Header
+          const headerRow = document.createElement("div");
+          headerRow.className = "ticket-header-row";
+
+          const titleSpan = document.createElement("div");
+          titleSpan.className = "ticket-title";
+          titleSpan.textContent = ticket.title;
+
+          const idSpan = document.createElement("div");
+          idSpan.className = "ticket-id";
+          idSpan.textContent = `#${index + 1}`;
+
+          headerRow.appendChild(titleSpan);
+          headerRow.appendChild(idSpan);
+
+          // Meta row
+          const metaRow = document.createElement("div");
+          metaRow.className = "ticket-meta-row";
+
+          const statusBadge = document.createElement("span");
+          statusBadge.className = "badge " + (function (s) {
+            switch (s) {
+              case "backlog": return "badge-status-backlog";
+              case "in_progress": return "badge-status-progress";
+              case "blocked": return "badge-status-blocked";
+              case "done": return "badge-status-done";
+              default: return "badge-status-backlog";
+            }
+          })(ticket.status);
+          statusBadge.textContent = statusLabel(ticket.status);
+
+          const priorityBadge = document.createElement("span");
+          priorityBadge.className = "badge " + (function (p) {
+            switch (p) {
+              case "low": return "badge-priority-low";
+              case "medium": return "badge-priority-medium";
+              case "high": return "badge-priority-high";
+              case "critical": return "badge-priority-critical";
+              default: return "badge-priority-low";
+            }
+          })(ticket.priority);
+          priorityBadge.textContent = priorityLabel(ticket.priority);
+
+          metaRow.appendChild(statusBadge);
+          metaRow.appendChild(priorityBadge);
+
+          if (ticket.tags && ticket.tags.length) {
+            ticket.tags.forEach(tag => {
+              const pill = document.createElement("span");
+              pill.className = "tag-pill";
+              pill.textContent = tag;
+              metaRow.appendChild(pill);
+            });
+          }
+
+          // Description
+          const desc = document.createElement("p");
+          desc.className = "ticket-desc";
+          desc.textContent = ticket.description || "";
+
+          // Footer
+          const footerRow = document.createElement("div");
+          footerRow.className = "ticket-footer-row";
+
+          const footerLeft = document.createElement("div");
+          footerLeft.className = "ticket-footer-left";
+          const createdLine = document.createElement("span");
+          createdLine.textContent = `Created ${formatDate(ticket.createdAt)}`;
+          const updatedLine = document.createElement("span");
+          if (ticket.updatedAt && ticket.updatedAt !== ticket.createdAt) {
+            updatedLine.textContent = `Updated ${formatDate(ticket.updatedAt)}`;
+          } else {
+            updatedLine.textContent = "";
+          }
+          footerLeft.appendChild(createdLine);
+          if (updatedLine.textContent) footerLeft.appendChild(updatedLine);
+
+          const footerRight = document.createElement("div");
+          footerRight.className = "ticket-footer-right";
+
+          const statusSelect = document.createElement("select");
+          statusSelect.className = "status-select";
+          ["backlog", "in_progress", "blocked", "done"].forEach(s => {
+            const opt = document.createElement("option");
+            opt.value = s;
+            opt.textContent = statusLabel(s);
+            if (ticket.status === s) opt.selected = true;
+            statusSelect.appendChild(opt);
+          });
+          statusSelect.addEventListener("change", () => {
+            ticket.status = statusSelect.value;
+            ticket.updatedAt = Date.now();
+            saveTickets();
+            renderTickets();
+          });
+
+          const editBtn = document.createElement("button");
+          editBtn.type = "button";
+          editBtn.className = "btn-icon btn-sm";
+          editBtn.textContent = "Edit";
+          editBtn.addEventListener("click", () => startEditing(ticket));
+
+          const deleteBtn = document.createElement("button");
+          deleteBtn.type = "button";
+          deleteBtn.className = "btn-icon btn-icon-danger btn-sm";
+          deleteBtn.textContent = "Delete";
+          deleteBtn.addEventListener("click", () => {
+            if (!confirm("Delete this ticket?")) return;
+            tickets = tickets.filter(t => t.id !== ticket.id);
+            saveTickets();
+            renderTickets();
+            if (editingId === ticket.id) resetForm();
+          });
+
+          footerRight.appendChild(statusSelect);
+          footerRight.appendChild(editBtn);
+          footerRight.appendChild(deleteBtn);
+
+          footerRow.appendChild(footerLeft);
+          footerRow.appendChild(footerRight);
+
+          // Assemble card
+          card.appendChild(headerRow);
+          card.appendChild(metaRow);
+          if (ticket.description) card.appendChild(desc);
+          card.appendChild(footerRow);
+
+          ticketList.appendChild(card);
+        });
+
+        updateSummary();
+      }
+
+      // Events
+      ticketForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const title = titleInput.value.trim();
+        if (!title) {
+          alert("Title is required.");
+          return;
+        }
+        const description = descriptionInput.value.trim();
+        const status = statusInput.value;
+        const priority = priorityInput.value;
+        const tagsRaw = tagsInput.value.trim();
+        const tags = tagsRaw ? tagsRaw.split(",").map(t => t.trim()).filter(Boolean) : [];
+
+        const now = Date.now();
+
+        if (editingId !== null) {
+          const idx = tickets.findIndex(t => t.id === editingId);
+          if (idx !== -1) {
+            tickets[idx] = {
+              ...tickets[idx],
+              title,
+              description,
+              status,
+              priority,
+              tags,
+              updatedAt: now
+            };
+          }
+        } else {
+          const ticket = {
+            id: now,
+            title,
+            description,
+            status,
+            priority,
+            tags,
+            createdAt: now,
+            updatedAt: now
+          };
+          tickets.push(ticket);
+        }
+
+        saveTickets();
+        renderTickets();
+        resetForm();
+      });
+
+      resetBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        resetForm();
+      });
+
+      filterStatus.addEventListener("change", renderTickets);
+      filterSort.addEventListener("change", renderTickets);
+
+      clearAllBtn.addEventListener("click", () => {
+        if (!tickets.length) return;
+        if (!confirm("Clear ALL tickets? This cannot be undone.")) return;
+        tickets = [];
+        saveTickets();
+        renderTickets();
+        resetForm();
+      });
+
+      // Init
+      loadTickets();
+      renderTickets();
+    })();
+  </script>
+</body>
+</html>
